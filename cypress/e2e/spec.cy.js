@@ -81,7 +81,7 @@ describe("template spec", () => {
     cy.contains("Text Input Button").click();
   });
 
-  it.only("Row 3", () => {
+  it("Row 3", () => {
     //Scrollbars
     cy.visit("http://uitestingplayground.com/");
     cy.contains("Scrollbars").click();
