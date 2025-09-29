@@ -43,7 +43,7 @@ describe("template spec", () => {
     cy.contains(/Button Appearing After Delay/i).click();
   });
 
-  it("Row 2, Long Waits", () => {
+  it("Row 2", () => {
     //AJAX Data
     cy.visit("http://uitestingplayground.com/");
     cy.contains("AJAX Data").click();
@@ -64,13 +64,32 @@ describe("template spec", () => {
     cy.wait(15000);
 
     cy.contains("Data calculated on the client side.");
-  });
 
-  it.only("Rest of Row 2", () => {
     //Click
     cy.visit("http://uitestingplayground.com/");
     cy.contains("Click").click();
     cy.contains(/Button That Ignores DOM Click Event/i).click();
     cy.contains(/Button That Ignores DOM Click Event/i).click();
+
+    //Text Input
+    cy.visit("http://uitestingplayground.com/");
+    cy.contains("Text Input").click();
+    cy.get("input").type("Text Input Button");
+    cy.contains(
+      "Button That Should Change it's Name Based on Input Value"
+    ).click();
+    cy.contains("Text Input Button").click();
+  });
+
+  it.only("Row 3", () => {
+    //Scrollbars
+    cy.visit("http://uitestingplayground.com/");
+    cy.contains("Scrollbars").click();
+
+    //Cypress will already scroll into view before clicking
+    cy.contains("Hiding Button").click();
+
+    //Cypress says it works but when you view the test the placed clicked is not on the button
+    cy.contains("Hiding Button").scrollIntoView().click();
   });
 });
