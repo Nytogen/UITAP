@@ -1,3 +1,5 @@
+const { assert } = require("chai");
+
 describe("template spec", () => {
   it("Row 1", () => {
     //Dynamic ID
@@ -81,7 +83,7 @@ describe("template spec", () => {
     cy.contains("Text Input Button").click();
   });
 
-  it("Row 3", () => {
+  it.only("Row 3", () => {
     //Scrollbars
     cy.visit("http://uitestingplayground.com/");
     cy.contains("Scrollbars").click();
@@ -91,5 +93,50 @@ describe("template spec", () => {
 
     //Cypress says it works but when you view the test the placed clicked is not on the button
     cy.contains("Hiding Button").scrollIntoView().click();
+
+    //Dynamic Tables
+    cy.visit("http://uitestingplayground.com/");
+    cy.contains("Dynamic Table").click();
+
+    let cpuIndex;
+    cy.get("div [role='table']").within(() => {
+      cy.get("[role='rowgroup']")
+        .first()
+        .get("[role='columnheader']")
+        .each(($el, index) => {
+          if ("CPU" === $el[0].textContent) {
+            cpuIndex = index;
+          }
+        });
+    });
+
+    let cpuText = "placeholder";
+    cy.get("div [role='table']").within(() => {
+      cy.get("[role='rowgroup']")
+        .last()
+        .contains("Chrome")
+        .parent()
+        .within(() => {
+          cy.get("span").each(($el, index) => {
+            if (index == cpuIndex) {
+              cpuText = "Chrome CPU: " + $el[0].textContent;
+              /*
+              String references within cypress have an interesting behavior
+              if you assign a variable to the contents of an element then will reverse back 
+              once the cy call is fully done, this is not the case for ints
+
+              Thus my solution is to continue the cy chain, go up to the parent elements and go
+              back down in the dom to compare the two texts
+              */
+            }
+          });
+        })
+        .parentsUntil("section")
+        .then(($el) => {
+          let chromeTest =
+            $el[2].getElementsByClassName("bg-warning")[0].textContent;
+          assert.equal(cpuText, chromeTest);
+        });
+    });
   });
 });
