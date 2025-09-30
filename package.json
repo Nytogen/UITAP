@@ -8,9 +8,8 @@
     "start": "next start",
     "lint": "next lint"
   },
-  "dependencies": {
-  },
   "devDependencies": {
+    "chai": "^6.2.0",
     "cypress": "^15.2.0"
   }
 }
