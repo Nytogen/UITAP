@@ -2,26 +2,23 @@ const { assert } = require("chai");
 
 describe("template spec", () => {
   it("Row 1", () => {
-    //Dynamic ID
-    cy.visit("http://uitestingplayground.com/");
-    cy.contains("Dynamic ID").click();
+    /* Dynamic ID */
+    cy.toTest("Dynamic ID");
     cy.contains(/Button with dynamic ID/i).click();
 
-    //Class Attribute
+    /* Class Attribute */
     const stub = cy.stub();
     cy.on("window:alert", stub);
 
-    cy.visit("http://uitestingplayground.com/");
-    cy.contains("Class Attribute").click();
+    cy.toTest("Class Attribute");
     cy.get(".btn-primary")
       .click()
       .then(() => {
         expect(stub.getCall(0)).to.be.calledWith("Primary button pressed");
       });
 
-    //Hidden Element
-    cy.visit("http://uitestingplayground.com/");
-    cy.contains("Hidden Layers").click();
+    /* Hidden Element */
+    cy.toTest("Hidden Layers");
 
     cy.get("#greenButton").should("be.visible");
     cy.get("#greenButton").click();
@@ -39,24 +36,21 @@ describe("template spec", () => {
         cy.get('[style="z-index: 1;"]').get("#greenButton");
       });
 
-    //Load Delay
-    cy.visit("http://uitestingplayground.com/");
-    cy.contains("Load Delay").click();
+    /* Load Delay */
+    cy.toTest("Load Delay");
     cy.contains(/Button Appearing After Delay/i).click();
   });
 
   it("Row 2", () => {
-    //AJAX Data
-    cy.visit("http://uitestingplayground.com/");
-    cy.contains("AJAX Data").click();
+    /* AJAX Data */
+    cy.toTest("AJAX Data");
     cy.intercept("GET", "/ajaxdata").as("ajaxRequest");
     cy.contains(/Button Triggering AJAX Request/i).click();
     cy.wait("@ajaxRequest");
     cy.contains("Data loaded with AJAX get request.");
 
     //Client Side Delay
-    cy.visit("http://uitestingplayground.com/");
-    cy.contains("Client Side Delay").click();
+    cy.toTest("Client Side Delay");
     cy.contains(/Button Triggering Client Side Logic/i).click();
 
     /*
@@ -67,15 +61,14 @@ describe("template spec", () => {
 
     cy.contains("Data calculated on the client side.");
 
-    //Click
-    cy.visit("http://uitestingplayground.com/");
-    cy.contains("Click").click();
+    /* Click */
+    cy.toTest("Click");
+
     cy.contains(/Button That Ignores DOM Click Event/i).click();
     cy.contains(/Button That Ignores DOM Click Event/i).click();
 
-    //Text Input
-    cy.visit("http://uitestingplayground.com/");
-    cy.contains("Text Input").click();
+    /* Text Input */
+    cy.toTest("Text Input");
     cy.get("input").type("Text Input Button");
     cy.contains(
       "Button That Should Change it's Name Based on Input Value"
@@ -84,9 +77,8 @@ describe("template spec", () => {
   });
 
   it("Row 3", () => {
-    //Scrollbars
-    cy.visit("http://uitestingplayground.com/");
-    cy.contains("Scrollbars").click();
+    /* Scrollbars */
+    cy.toTest("Scrollbars");
 
     //Cypress will already scroll into view before clicking
     cy.contains("Hiding Button").click();
@@ -94,9 +86,8 @@ describe("template spec", () => {
     //Cypress says it works but when you view the test the placed clicked is not on the button
     cy.contains("Hiding Button").scrollIntoView().click();
 
-    //Dynamic Tables
-    cy.visit("http://uitestingplayground.com/");
-    cy.contains("Dynamic Table").click();
+    /* Dynamic Tables */
+    cy.toTest("Dynamic Table");
 
     let cpuIndex;
     cy.get("div [role='table']").within(() => {
@@ -138,5 +129,7 @@ describe("template spec", () => {
           assert.equal(cpuText, chromeTest);
         });
     });
+
+    /* Verify Text */
   });
 });
