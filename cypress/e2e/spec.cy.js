@@ -4,7 +4,9 @@ describe("template spec", () => {
   it("Row 1", () => {
     /* Dynamic ID */
     cy.toTest("Dynamic ID");
-    cy.contains(/Button with dynamic ID/i).click();
+    cy.contains(/Button with dynamic ID/i)
+      .click()
+      .should("exist");
 
     /* Class Attribute */
     const stub = cy.stub();
@@ -15,7 +17,8 @@ describe("template spec", () => {
       .click()
       .then(() => {
         expect(stub.getCall(0)).to.be.calledWith("Primary button pressed");
-      });
+      })
+      .should("exist");
 
     /* Hidden Element */
     cy.toTest("Hidden Layers");
@@ -32,7 +35,7 @@ describe("template spec", () => {
           z-index of higher number will cover z-index of lower numbers, this is used as a proxy to check if 
           the greenbutton cannot be clicked anymore after it's clicked once
         */
-        cy.get('[style="z-index: 2;"]').get("#blueButton");
+        cy.get('[style="z-index: 2;"]').get("#blueButton").should("exist");
         cy.get('[style="z-index: 1;"]').get("#greenButton");
       });
 
@@ -47,7 +50,7 @@ describe("template spec", () => {
     cy.intercept("GET", "/ajaxdata").as("ajaxRequest");
     cy.contains(/Button Triggering AJAX Request/i).click();
     cy.wait("@ajaxRequest");
-    cy.contains("Data loaded with AJAX get request.");
+    cy.contains("Data loaded with AJAX get request.").should("exist");
 
     //Client Side Delay
     cy.toTest("Client Side Delay");
@@ -59,13 +62,17 @@ describe("template spec", () => {
     */
     cy.wait(15000);
 
-    cy.contains("Data calculated on the client side.");
+    cy.contains("Data calculated on the client side.").should("exist");
 
     /* Click */
     cy.toTest("Click");
 
-    cy.contains(/Button That Ignores DOM Click Event/i).click();
-    cy.contains(/Button That Ignores DOM Click Event/i).click();
+    cy.contains(/Button That Ignores DOM Click Event/i)
+      .click()
+      .should("exist");
+    cy.contains(/Button That Ignores DOM Click Event/i)
+      .click()
+      .should("exist");
 
     /* Text Input */
     cy.toTest("Text Input");
@@ -73,7 +80,7 @@ describe("template spec", () => {
     cy.contains(
       "Button That Should Change it's Name Based on Input Value"
     ).click();
-    cy.contains("Text Input Button").click();
+    cy.contains("Text Input Button").click().should("exist");
   });
 
   it("Row 3", () => {
@@ -84,7 +91,7 @@ describe("template spec", () => {
     cy.contains("Hiding Button").click();
 
     //Cypress says it works but when you view the test the placed clicked is not on the button
-    cy.contains("Hiding Button").scrollIntoView().click();
+    cy.contains("Hiding Button").scrollIntoView().click().should("exist");
 
     /* Dynamic Tables */
     cy.toTest("Dynamic Table");
@@ -102,7 +109,7 @@ describe("template spec", () => {
     });
 
     let cpuText = "placeholder";
-    cy.get("div [role='table']").within(() => {
+    cy.get("div[role='table']").within(() => {
       cy.get("[role='rowgroup']")
         .last()
         .contains("Chrome")
@@ -126,10 +133,29 @@ describe("template spec", () => {
         .then(($el) => {
           let chromeTest =
             $el[2].getElementsByClassName("bg-warning")[0].textContent;
-          assert.equal(cpuText, chromeTest);
+          assert.equal(
+            cpuText,
+            chromeTest,
+            "Value from chrome CPU and from table do not match"
+          );
         });
     });
 
     /* Verify Text */
+    cy.toTest("Verify Text");
+    cy.contains("Playground")
+      .next()
+      .within(() => {
+        cy.contains("Welcome UserName!").parent().should("exist");
+      });
+
+    /* Progress Bar */
+    cy.toTest("Progress Bar");
+    cy.get("button[onclick='Start()']").click();
+    //Test will wait 30 seconds for the progress bar to reach 75%
+    cy.get(".progress-bar").contains("75%", { timeout: 30000 });
+    cy.get("button[onclick='Stop()']").click();
+
+    cy.contains("Result: 0,").should("exist");
   });
 });
