@@ -133,11 +133,7 @@ describe("template spec", () => {
         .then(($el) => {
           let chromeTest =
             $el[2].getElementsByClassName("bg-warning")[0].textContent;
-          assert.equal(
-            cpuText,
-            chromeTest,
-            "Value from chrome CPU and from table do not match"
-          );
+          expect(cpuText === chromeTest).to.be.true;
         });
     });
 
@@ -157,5 +153,50 @@ describe("template spec", () => {
     cy.get("button[onclick='Stop()']").click();
 
     cy.contains("Result: 0,").should("exist");
+  });
+
+  it("Row 4", () => {
+    /* Visibility */
+    cy.toTest("Visibility");
+
+    cy.get("button#removedButton").should("be.visible");
+    cy.get("button#zeroWidthButton").should("be.visible");
+    cy.get("button#overlappedButton").should("be.visible");
+    cy.get("button#transparentButton").should("be.visible");
+    cy.get("button#invisibleButton").should("be.visible");
+    cy.get("button#notdisplayedButton").should("be.visible");
+    cy.get("button#offscreenButton").should("be.visible");
+
+    cy.get("button#hideButton").click();
+
+    cy.get("button#removedButton").should("not.exist");
+    cy.get("button#zeroWidthButton").should("not.be.visible");
+
+    //This snippet was taken from
+    //https://glebbahmutov.com/cypress-examples/recipes/overlapping-elements.html
+    const areOverlapping = (rect1, rect2) => {
+      // if one rectangle is on the left side of the other
+      if (rect1.right < rect2.left || rect2.right < rect1.left) {
+        return false;
+      }
+
+      // if one rectangle is above the other
+      if (rect1.bottom < rect2.top || rect2.bottom < rect1.top) {
+        return false;
+      }
+
+      // the rectangles must overlap
+      return true;
+    };
+    cy.get("#overlappedButton").then(($button) => {
+      cy.get("#hidingLayer").then(($hidingLayer) => {
+        expect(areOverlapping($hidingLayer, $button)).to.be.true;
+      });
+    });
+
+    cy.get("button#transparentButton").should("not.be.visible");
+    cy.get("button#invisibleButton").should("not.be.visible");
+    cy.get("button#notdisplayedButton").should("not.be.visible");
+    cy.isNotInViewport("button#offscreenButton");
   });
 });
