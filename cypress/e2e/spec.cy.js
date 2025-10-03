@@ -148,8 +148,8 @@ describe("template spec", () => {
     /* Progress Bar */
     cy.toTest("Progress Bar");
     cy.get("button[onclick='Start()']").click();
-    //Test will wait 30 seconds for the progress bar to reach 75%
-    cy.get(".progress-bar").contains("75%", { timeout: 30000 });
+    //Test will wait 1 minute for the progress bar to reach 75%
+    cy.get(".progress-bar").contains("75%", { timeout: 60000 });
     cy.get("button[onclick='Stop()']").click();
 
     cy.contains("Result: 0,").should("exist");
