@@ -249,4 +249,28 @@ describe("template spec", () => {
     //Cypress treats nbsp as a standard space
     cy.contains(/^My Button$/).click();
   });
+
+  it("row 5", () => {
+    /* Overlapped Element */
+    cy.toTest("Overlapped Element");
+
+    cy.get("input#name").type("Placeholder Name");
+    cy.get("input#name").should("have.value", "Placeholder Name");
+
+    /* Shadow DOM */
+    cy.toTest("Shadow DOM");
+
+    cy.get("guid-generator").shadow().find("button#buttonGenerate").click();
+
+    //Unable to copy since the site is in HTTP -> its unsecure
+    //cy.get("guid-generator").shadow().find("#buttonCopy").click();
+
+    //Instead we will check that something was generated
+    cy.get("guid-generator")
+      .shadow()
+      .find("input#editField")
+      .then(($el) => {
+        expect($el[0].value != "").to.be.true;
+      });
+  });
 });
