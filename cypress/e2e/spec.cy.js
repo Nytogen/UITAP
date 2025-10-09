@@ -198,5 +198,55 @@ describe("template spec", () => {
     cy.get("button#invisibleButton").should("not.be.visible");
     cy.get("button#notdisplayedButton").should("not.be.visible");
     cy.isNotInViewport("button#offscreenButton");
+
+    /* Sample App */
+    cy.toTest("Sample App");
+
+    cy.contains("User logged out.").should("be.visible");
+
+    cy.get("input[type='text']").as("userName");
+    cy.get("input[type='password']").as("password");
+    cy.get("button#login").as("submit");
+
+    //Empty fields
+    cy.get("@submit").click();
+    cy.contains("Invalid username/password").should("be.visible");
+
+    //Valid login
+    cy.get("@userName").type("userOne");
+    cy.get("@password").type("pwd");
+    cy.get("@submit").click();
+    cy.contains("Welcome, userOne!").should("be.visible");
+
+    //Logout
+    cy.get("@submit").click();
+    cy.contains("User logged out.").should("be.visible");
+
+    //Wrong password
+    cy.get("@userName").type("userOne");
+    cy.get("@password").type("pwd2");
+    cy.get("@submit").click();
+    cy.contains("Invalid username/password").should("be.visible");
+
+    /* Mouse Over*/
+    cy.toTest("Mouse Over");
+
+    cy.get("a.text-primary[title='Click me']").click();
+    cy.get("a.text-warning[title='Active Link']").click();
+
+    cy.contains("The link above clicked 2 times.");
+
+    cy.get("a.text-primary[title='Link Button']").click();
+    cy.get("a.text-warning[title='Link Button']").click();
+    cy.get("a.text-warning[title='Link Button']").click();
+    cy.get("a.text-warning[title='Link Button']").click();
+
+    cy.contains("The link above clicked 4 times.");
+
+    /* Non-Breaking Space */
+    cy.toTest("Non-Breaking Space");
+
+    //Cypress treats nbsp as a standard space
+    cy.contains(/^My Button$/).click();
   });
 });
