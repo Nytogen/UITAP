@@ -1,4 +1,4 @@
-const { assert } = require("chai");
+const { assert, expect } = require("chai");
 
 describe("template spec", () => {
   it("Row 1", () => {
@@ -272,5 +272,70 @@ describe("template spec", () => {
       .then(($el) => {
         expect($el[0].value != "").to.be.true;
       });
+
+    /* Alerts */
+    cy.toTest("Alerts");
+
+    const alerts = [];
+
+    cy.on("window:alert", (t) => {
+      alerts.push(t);
+    });
+
+    cy.on("window:confirm", (t) => {
+      expect(t).to.equal("Today is Friday.\nDo you agree?");
+    });
+
+    cy.get("#alertButton").click();
+    cy.get("#confirmButton").click();
+    cy.window().then((win) => {
+      cy.stub(win, "prompt").returns("cats");
+      cy.get("#promptButton").click();
+    });
+
+    cy.wait(2000).then(() => {
+      expect(alerts[0]).to.equal(
+        "Today is a working day.\nOr less likely a holiday."
+      );
+      expect(alerts[1]).to.equal("Yes");
+      expect(alerts[2]).to.equal("User value: cats");
+    });
+
+    /* File Upload */
+    cy.toTest("File Upload");
+
+    /*
+     Iframe code is taken from 
+     https://www.cypress.io/blog/working-with-iframes-in-cypress
+     */
+    const getIframeDocument = () => {
+      return cy
+        .get("iframe")
+
+        .its("0.contentDocument")
+        .should("exist");
+    };
+
+    const getIframeBody = () => {
+      return (
+        getIframeDocument()
+          // automatically retries until body is loaded
+          .its("body")
+          .should("not.be.undefined")
+          // chaining more Cypress commands, like ".find(...)"
+          .then(cy.wrap)
+      );
+    };
+
+    /* 
+    Drag dropping uiploads 2 files for some reason so it was removed as an action
+    */
+    getIframeBody().find("input#browse").selectFile("red.png", { force: true });
+    getIframeBody().find(".file-info").contains("red.png");
+
+    /*
+    According to this github post, we cannot test the browse file button
+    https://github.com/cypress-io/cypress/issues/8528
+    */
   });
 });
