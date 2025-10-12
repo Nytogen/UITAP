@@ -9,16 +9,12 @@ describe("template spec", () => {
       .should("exist");
 
     /* Class Attribute */
-    const stub = cy.stub();
-    cy.on("window:alert", stub);
-
     cy.toTest("Class Attribute");
-    cy.get(".btn-primary")
-      .click()
-      .then(() => {
-        expect(stub.getCall(0)).to.be.calledWith("Primary button pressed");
-      })
-      .should("exist");
+
+    cy.on("window:confirm", (t) => {
+      expect(t).to.equal("Primary button pressed");
+    });
+    cy.get(".btn-primary").click();
 
     /* Hidden Element */
     cy.toTest("Hidden Layers");
