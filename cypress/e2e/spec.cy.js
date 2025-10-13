@@ -334,4 +334,107 @@ describe("template spec", () => {
     https://github.com/cypress-io/cypress/issues/8528
     */
   });
+
+  it("row 6", () => {
+    /* Animated Button*/
+    cy.toTest("Animated Button");
+    cy.get("#animationButton").click();
+
+    cy.get("button.spin")
+      .should("exist")
+      .then(() => {
+        cy.get("button#movingTarget:not(.spin)", { timeout: 10000 }).click();
+      });
+
+    /* Disable Input */
+    cy.toTest("Disabled Input");
+    cy.get("button#enableButton").click();
+    cy.get("input[disabled]").should("exist");
+    cy.get("input[disabled]", { timeout: 5000 })
+      .should("not.exist")
+      .then(() => {
+        cy.contains("Input Enabled...").should("exist");
+        cy.get("input").type("input box is enabled").blur();
+        cy.contains("Value changed to: input box is enabled").should("exist");
+      });
+
+    /* Auto Wait */
+    cy.toTest("Auto Wait");
+
+    //Button
+    cy.get("select#element-type").select("Button");
+    cy.get("#visible").uncheck();
+    cy.get("#applyButton3").click();
+
+    cy.contains("Target element settings applied for 3 seconds.").should(
+      "be.visible"
+    );
+    cy.get("button#target").should("not.be.visible");
+
+    cy.wait(3000);
+
+    cy.get("button#target").click();
+    cy.contains("Target clicked.").should("exist");
+
+    //Input
+    cy.get("select#element-type").select("Input");
+    cy.get("#enabled").uncheck();
+    cy.get("#applyButton3").click();
+
+    cy.contains("Target element settings applied for 3 seconds.").should(
+      "be.visible"
+    );
+    cy.get("input#target").should("be.disabled");
+
+    cy.wait(3000);
+
+    cy.get("input#target").type("Hello World.").blur();
+    cy.contains("Text: Hello World.").should("exist");
+
+    //Textarea
+    cy.get("select#element-type").select("Textarea");
+    cy.get("#editable").uncheck();
+    cy.get("#applyButton3").click();
+
+    cy.contains("Target element settings applied for 3 seconds.").should(
+      "be.visible"
+    );
+    cy.get("textarea#target[readonly]").should("exist");
+
+    cy.wait(3000);
+
+    cy.get("textarea#target").type("Textarea").blur();
+    cy.contains("Text: Textarea").should("exist");
+
+    //Select
+    cy.get("select#element-type").select("Select");
+    cy.get("#ontop").uncheck();
+    cy.get("#applyButton3").click();
+
+    cy.contains("Target element settings applied for 3 seconds.").should(
+      "be.visible"
+    );
+    //Cypress doesnt care about overlapping elements in select so we just check if the overlay exists
+    cy.get("div#overlay").should("exist");
+
+    cy.wait(3000);
+
+    cy.get("select#target").select("Item 3");
+    cy.contains("Selected: Item 3").should("exist");
+
+    //Label
+    cy.get("select#element-type").select("Label");
+    cy.get("#nonzero").uncheck();
+    cy.contains("This is a Label").should("be.visible");
+    cy.get("#applyButton3").click();
+
+    cy.contains("Target element settings applied for 3 seconds.").should(
+      "be.visible"
+    );
+    cy.contains("This is a Label").should("not.be.visible");
+
+    cy.wait(3000);
+
+    cy.contains("This is a Label").should("be.visible");
+  });
 });
